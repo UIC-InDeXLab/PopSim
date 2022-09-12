@@ -1,6 +1,10 @@
+from operator import index
 from utils import getDecennialData
 from abc import ABC, abstractmethod
-import matplotlib as plt
+# import matplotlib as plt
+import pandas as pd
+import numpy as np
+
 
 class Person():
     def __init__(self, blockFIPS, race):
@@ -150,12 +154,15 @@ class Unit(UnitInterface):
     def getSample(self, n = 1):
         randomFloat = np.random.random_sample(size = n)
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat, side="right")
+        if (sum(self.decennialDataCumulative) == 0):
+            return []
         return list(map((lambda x : Person(self._FIPS, self.decennialDataCumulative.index[x])), indexNum))
 
     def graphDecennialData(self):
         self.getProcessedDecennialData()
         self._decennial_data.plot( kind = 'bar')
         plt.show()
+
 
 class UnitByDecennialData(Unit):
     def __init__(self, decennialData, cummulativeDecennialData = None):

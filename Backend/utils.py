@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point, Polygon
+# import geopandas as gpd
+# from shapely.geometry import Point, Polygon
 
 def getFIPS(lat, long, year = 2020, division = "Block"):
     if division not in {"Block", "County", "State"}:
