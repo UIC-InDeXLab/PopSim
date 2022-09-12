@@ -156,6 +156,7 @@ class Unit(UnitInterface):
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat, side="right")
         if (sum(self.decennialDataCumulative) == 0):
             return []
+        
         return list(map((lambda x : Person(self._FIPS, self.decennialDataCumulative.index[x])), indexNum))
 
     def graphDecennialData(self):

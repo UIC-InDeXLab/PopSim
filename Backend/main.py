@@ -7,8 +7,6 @@ from tract import TractByBlockGroup
 from block import BlockByFIPS
 app = FastAPI()
 
-
-
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
