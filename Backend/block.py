@@ -3,7 +3,7 @@ from utils import getDecennialData, getFIPS
 
 class BlockByFIPS(Unit):
     def __init__(self, FIPS, censusYear = "2020"):  
-      super().__init__("Block")
+      super().__init__("block")
       if (len(FIPS) != 15):
           raise Exception("fips length is invalid")
       self._FIPS = FIPS
