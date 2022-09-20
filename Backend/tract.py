@@ -19,7 +19,7 @@ class TractByBlockGroup(Group):
     def __init__(self, FIPS, census_year = "2020"):
         if (len(FIPS) != 11):
             raise Exception("fips length is invalid")
-        super().__init__(FIPS, group_level = "Tract", unit_level = "Block", census_year = census_year)
+        super().__init__(FIPS, group_level = "tract", unit_level = "block", census_year = census_year)
 
     @property
     def decennialData(self):

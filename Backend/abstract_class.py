@@ -5,7 +5,7 @@ import matplotlib as plt
 import pandas as pd
 import numpy as np
 from utils import randomize_location, getSFDF
-
+import os
 
 class Person():
 
@@ -177,6 +177,12 @@ class Unit(UnitInterface):
         return f"<Unit administrative_unit:{self._administrative_unit}, \n    FIPS:{self._FIPS}, \n    decennial_data: \n {self.decennialData}>"
 
     def getSample(self, n=1, to_csv=False):
+        filename = self._FIPS + "_num-sample-" + str(n) + ".csv"
+        pathfile = os.path.join("./data/generatedDatasets", filename)
+        
+        if (os.path.exists(pathfile)):
+            return pd.read_csv(pathfile)
+        
         randomFloat = np.random.random_sample(size=n)
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat,
                                                              side="right")
@@ -192,8 +198,10 @@ class Unit(UnitInterface):
             "location":
             randomLocations
         })
+        
         if (to_csv):
-            df.to_csv(self._FIPS + "_num-sample-" + str(n) + ".csv")
+            df.to_csv(pathfile)
+        
         return df
 
     def graphDecennialData(self):
@@ -252,6 +260,7 @@ class Group(UnitInterface):
         self._decennial_data = None
         self._decennial_data_cumulative = None
         self._group = None
+        self._shapeInfo = None
 
     @property
     def administrativeUnit(self):
@@ -354,21 +363,29 @@ class Group(UnitInterface):
         return f"<Group administrative_unit:{self._administrative_unit}, \n element_unit:{self._unit_level}, \n     FIPS:{self._FIPS}, \n    decennial_data: \n {self.decennialData}>"
 
     def getSample(self, n=1, group=None, to_csv=False):
+        filename = self._administrative_unit + "_"+ self._FIPS + "_by_" + self._unit_level+ "_num_people_" + str(n) +".csv"
+        pathfile = os.path.join("./data/generatedDatasets", filename)
+        
+        if (os.path.exists(pathfile)):
+            return pd.read_csv(pathfile)
+        
         randomFloat = np.random.random_sample(size=n)
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat, side="right")
         indexes, num_people = np.unique(indexNum, return_counts=True)
         decennial_data_indexes = list(map(lambda x: self.decennialDataCumulative.index[x], indexes))
-        sample = pd.DataFrame([], columns=["FIPS","race","location"])
+        sample = []
         
         for i in range(len(decennial_data_indexes)):
+            print(num_people[i])
             decennial_data_row = self.decennialData.iloc[int(decennial_data_indexes[i])]
-            shapeInfo_row = self.shapeInfo[self.shapeInfo.GEOID.str in decennial_data_row.GEO_ID]
-            print(decennial_data_row)
-            print(shapeInfo_row)
+            shapeInfo_row = self.shapeInfo[self.shapeInfo.GEOID == decennial_data_row.GEO_ID[-15:]].iloc[0]
             sample.append(UnitByDecennialData(decennial_data_row).setGroup(self.group).setShapeInfo(shapeInfo_row).getSample(num_people[i]))
             
+        sample = pd.concat(sample)
+        
         if(to_csv):
-            sample.to_csv(self._administrative_unit + "_"+ self._FIPS + "_by_" + self._unit_level+ "_num_people_" + str(n) +".csv")
+            sample.to_csv(pathfile)
+            
         return sample
 
     def graphDecennialData(self):

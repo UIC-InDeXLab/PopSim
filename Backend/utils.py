@@ -38,10 +38,10 @@ def getDecennialData(fips, for_unit = 'block', dataField = "group(P1)", year = "
     url = "https://api.census.gov/data/"+ year +"/dec/pl?get="+ dataField + \
           "&for="+ for_unit_string + ("&in=" if len(list_string) > 0 else "") + \
           "%20".join(list_string)
-    filename = "_".join([for_unit_string, year]+list_string).replace(":", "-")+".csv"
-    
-    if os.path.exists(filename):
-        df = pd.read_csv(filename)
+    filename = "_".join([for_unit_string, year]+list_string).replace(":", "-").replace("*","all")+".csv"
+    pathfile = os.path.join("./data/decennialFiles",filename)
+    if os.path.exists(pathfile):
+        df = pd.read_csv(pathfile)
         if (df.shape[0] == 1):
             return df.iloc[0]
         return df
@@ -52,12 +52,12 @@ def getDecennialData(fips, for_unit = 'block', dataField = "group(P1)", year = "
         
         if len(JSONObject)  == 2:
             series = pd.Series(JSONObject[1], index=JSONObject[0]).dropna()
-            pd.DataFrame(series.to_dict(), index=[0]).to_csv(filename)
+            pd.DataFrame(series.to_dict(), index=[0]).to_csv(pathfile)
             return series
         else:
             dataframe = pd.DataFrame(data= JSONObject[1:], columns=JSONObject[0])
             dataframe.sort_values(by=["GEO_ID"], inplace=True, ignore_index=True)
-            dataframe.to_csv(filename)
+            dataframe.to_csv(pathfile)
             return dataframe
             
     except requests.ConnectionError as error:
@@ -101,7 +101,8 @@ def downloadShapeFile(FIPS, unit_level = 'block'):
             url = "https://www2.census.gov/geo/tiger/TIGER2021/TABBLOCK20/tl_2021_"+str(FIPS[0:2])+"_tabblock20.zip"
         response = requests.get(url)
         filename = url.split('/')[-1]
-        with open(filename,'wb') as output_file:
+        pathfile = os.path.join("./data/shapeFiles", filename)
+        with open(pathfile,'wb') as output_file:
             output_file.write(response.content)
         print('Downloading Completed')
         response.close()
@@ -122,11 +123,12 @@ def loadShapeFile(FIPS, unit_level = 'block'):
             filename = "tl_2021_"+str(FIPS[0:2])+"_tabblock20.zip"
         else:
             raise Exception("Unknown unit level")
-
-        if(not os.path.exists(filename)):
+        
+        pathfile = os.path.join("./data/shapeFiles", filename)
+        if(not os.path.exists(pathfile)):
             filename = downloadShapeFile(FIPS, unit_level)
 
-        sf = gpd.read_file(os.path.join(os.getcwd(),filename))
+        sf = gpd.read_file(pathfile)
         return sf
 
         
