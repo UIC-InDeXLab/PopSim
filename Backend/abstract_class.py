@@ -181,7 +181,7 @@ class Unit(UnitInterface):
         pathfile = os.path.join("./data/generatedDatasets", filename)
         
         if (os.path.exists(pathfile)):
-            return pd.read_csv(pathfile)
+            return pd.read_csv(pathfile).iloc[:,1:]
         
         randomFloat = np.random.random_sample(size=n)
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat,
@@ -218,31 +218,16 @@ class UnitByDecennialData(Unit):
                  shapeInfo=None):
         if not isinstance(decennialData, pd.Series):
             raise ("The DecennialData must be a panda Series")
-        if ('state' in decennialData.index):
-            state = str(decennialData['state'])
-            self._administrative_unit = 'State'
-        else:
-            state = ""
-
-        if ('county' in decennialData.index):
-            county = str(decennialData['county'])
-            self._administrative_unit = 'County'
-        else:
-            county = ""
-
-        if ('tract' in decennialData.index):
-            tract = str(decennialData['tract'])
-            self._administrative_unit = 'Tract'
-        else:
-            tract = ""
-
-        if ('block' in decennialData.index):
-            block = str(decennialData['block'])
-            self._administrative_unit = 'Block'
-        else:
-            block = ""
-
-        self._FIPS = state + county + tract + block
+        self._FIPS = decennialData.GEO_ID[decennialData.GEO_ID.find('US') + 2:]
+        if len(self._FIPS) == 2:
+            self._administrative_unit = 'state'
+        elif len(self._FIPS) == 5:
+            self._administrative_unit = 'county'
+        elif len(self._FIPS) == 11:
+            self._administrative_unit = 'tract'
+        elif len(self._FIPS) == 15:
+            self._administrative_unit = 'block'
+            
         self._censusYear = None
         self._group = None
         self._decennial_data = decennialData
@@ -367,7 +352,7 @@ class Group(UnitInterface):
         pathfile = os.path.join("./data/generatedDatasets", filename)
         
         if (os.path.exists(pathfile)):
-            return pd.read_csv(pathfile)
+            return pd.read_csv(pathfile).iloc[:,1:]
         
         randomFloat = np.random.random_sample(size=n)
         indexNum = self.decennialDataCumulative.searchsorted(randomFloat, side="right")
@@ -378,7 +363,9 @@ class Group(UnitInterface):
         for i in range(len(decennial_data_indexes)):
             print(num_people[i])
             decennial_data_row = self.decennialData.iloc[int(decennial_data_indexes[i])]
-            shapeInfo_row = self.shapeInfo[self.shapeInfo.GEOID == decennial_data_row.GEO_ID[-15:]].iloc[0]
+            shapeInfo_row = self.shapeInfo[self.shapeInfo.GEOID == decennial_data_row.GEO_ID[decennial_data_row.GEO_ID.find('US') + 2:]].iloc[0]
+            # if (len(decennial_data_row["GEO_ID"][-15:]) != 15):
+            #     raise("Error in GEO_ID length")
             sample.append(UnitByDecennialData(decennial_data_row).setGroup(self.group).setShapeInfo(shapeInfo_row).getSample(num_people[i]))
             
         sample = pd.concat(sample)

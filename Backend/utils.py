@@ -41,7 +41,7 @@ def getDecennialData(fips, for_unit = 'block', dataField = "group(P1)", year = "
     filename = "_".join([for_unit_string, year]+list_string).replace(":", "-").replace("*","all")+".csv"
     pathfile = os.path.join("./data/decennialFiles",filename)
     if os.path.exists(pathfile):
-        df = pd.read_csv(pathfile)
+        df = pd.read_csv(pathfile).iloc[:,1:]
         if (df.shape[0] == 1):
             return df.iloc[0]
         return df
