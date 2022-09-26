@@ -1,3 +1,0 @@
-data/generatedDatasets/*.csv filter=lfs diff=lfs merge=lfs -text
-data/shapeFiles/*.zip filter=lfs diff=lfs merge=lfs -text
-data/decennialFiles/*.csv filter=lfs diff=lfs merge=lfs -text
