@@ -349,8 +349,11 @@ class Group(UnitInterface):
     def __repr__(self):
         return f"<Group administrative_unit:{self._administrative_unit}, \n element_unit:{self._unit_level}, \n     FIPS:{self._FIPS}, \n    decennial_data: \n {self.decennialData}>"
 
-    def getSample(self, n=1, group=None, to_csv=False):
-        filename = self._administrative_unit + "_"+ self._FIPS + "_by_" + self._unit_level+ "_num_people_" + str(n) +".csv"
+    def getSample(self, n=1, group=None, to_csv=False, name=None):
+        if name is None:
+            filename = self._administrative_unit + "_"+ self._FIPS + "_by_" + self._unit_level+ "_num_people_" + str(n) +".csv"
+        else:
+            filename = name
         pathfile = os.path.join("./data/generatedDatasets", filename)
         
         if (os.path.exists(pathfile)):
