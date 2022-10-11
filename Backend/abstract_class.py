@@ -195,8 +195,10 @@ class Unit(UnitInterface):
             "race":
             list(map(lambda x: self.decennialDataCumulative.index[x],
                      indexNum)),
-            "location":
-            randomLocations
+            "lon":
+            [loc.x for loc in randomLocations],
+            "lat":
+            [loc.y for loc in randomLocations]
         })
         
         if (to_csv):
@@ -364,13 +366,11 @@ class Group(UnitInterface):
             print(num_people[i])
             decennial_data_row = self.decennialData.iloc[int(decennial_data_indexes[i])]
             shapeInfo_row = self.shapeInfo[self.shapeInfo.GEOID == decennial_data_row.GEO_ID[decennial_data_row.GEO_ID.find('US') + 2:]].iloc[0]
-            # if (len(decennial_data_row["GEO_ID"][-15:]) != 15):
-            #     raise("Error in GEO_ID length")
             sample.append(UnitByDecennialData(decennial_data_row).setGroup(self.group).setShapeInfo(shapeInfo_row).getSample(num_people[i]))
             
         sample = pd.concat(sample)
         
-        if(to_csv):
+        if(to_csv): 
             sample.to_csv(pathfile)
             
         return sample
