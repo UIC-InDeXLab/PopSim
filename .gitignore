@@ -1,0 +1,5 @@
+Backend/.venv/*
+Backend/__pycache__/*
+Backend/data/generatedDatasets/*
+Backend/data/shapeFiles/*.zip 
+Backend/data/decennialFiles/*.csv 
