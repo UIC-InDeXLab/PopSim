@@ -1,4 +1,4 @@
-Backend/.venv/*
+.env/*
 Backend/__pycache__/*
 Backend/data/generatedDatasets/*
 Backend/data/shapeFiles/*.zip 
