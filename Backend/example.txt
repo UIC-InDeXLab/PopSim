@@ -1,3 +1,0 @@
-http://localhost:8000/get_sample_by_fips/block/170318371002011/50
-http://localhost:8000/get_sample_by_fips/state/17/3000
-http://localhost:8000/get_sample_by_fips/tract/17031837100/200
