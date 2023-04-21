@@ -3,7 +3,7 @@
 Companion repo for "PopSim: An Individual-level Population Simulator for Equitable Allocation of City Resources" paper.
 
 ## Publications to cite:
-[1] Khanh Duy Nguyen, Nima Shahbazi, Abolfazl Asudeh. "PopSim: An Individual-level Population Simulator for Equitable Allocation of City Resources". In AFair-AMLD, 2023.
+[1] Khanh Duy Nguyen, Nima Shahbazi, Abolfazl Asudeh. "PopSim: An Individual-level Population Simulator for Equitable Allocation of City Resources". In AFair-AMLD workshop at SDM, 2023.
 
 
 ## Abstract
