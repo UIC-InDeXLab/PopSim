@@ -3,3 +3,7 @@ Backend/__pycache__/*
 Backend/data/generatedDatasets/*.csv 
 Backend/data/shapeFiles/*.zip 
 Backend/data/decennialFiles/*.csv 
+
+*.pyc
+*.DS_Store
+.DS_Store

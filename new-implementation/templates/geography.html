@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Variable table</title>
+    <style>
+        .selected-row {
+            background-color: green;
+        }
+    </style>
+    <script>
+        let chosenObject = null;
+
+        const rowClick = (event) => {
+                console.log("You clicked a row!");
+                var selectedRow =
+                    document.getElementsByClassName("selected-row")[0];
+                if (selectedRow && selectedRow !== event.target.parentElement) {
+                    selectedRow.classList.remove("selected-row");
+                }
+                if (
+                    event.target.parentElement.classList.contains(
+                        "selected-row"
+                    )
+                ) {
+                    event.target.parentElement.classList.remove("selected-row");
+                    chosenObject = null;
+                } else {
+                    event.target.parentElement.classList.add("selected-row");
+                    var rowData =
+                        event.target.parentElement.getElementsByTagName("td");
+                    chosenObject = rowData[0].textContent;
+                    console.log(chosenObject);
+
+                }
+            };
+
+        const submitRow = async (link_back) => {
+            if (chosenObject === null && document.getElementById("geography").innerHTML.length <=2) {
+                alert("Please select a row");
+            } else {
+                // Process selected rows and perform the desired action
+                console.log("Processing selected rows...");
+                const jsonBody = JSON.stringify({'key': "geography", "data": JSON.stringify(chosenObject)});
+                    const response = await fetch("/send-json/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: jsonBody,
+                    });
+                    console.log(response);
+                    const data = await response.json();
+                    window.location.href = link_back;
+            }
+        };
+
+
+    function submitFips() {
+            const inputs = {};
+
+            geographyJson.wildcard.forEach(item => {
+                const inputElement = document.getElementById(`${item}-input`);
+                inputs[item] = inputElement.value;
+            });
+
+            // Perform the API request with the user-provided FIPS codes here
+            console.log(inputs);
+        }
+
+
+    window.onload = generateInputForm();
+    </script>
+</head>
+<body>
+    <h1>List of variables</h1>
+    <button onclick="submitRow('/')">Return to index page</button>
+    <button onclick="submitRow('/variable')">Return to variables page</button>
+    <button onclick="submitRow('/geography')">Submit Rows</button>
+    <div>
+        <h2>Selected Dataset</h2>
+        {{dataset}}
+    </div>
+    </div>
+    <div>
+        <h2>Selected Variables</h2>
+        <div id ="variables">
+
+        {{variables|safe}}
+        </div>
+    </div>
+    <div>
+        <h2>Selected Geography</h2>
+        <div id ="geography">
+        {{geography|safe}}
+        </div>
+    </div>
+    <div>
+        <h2>Input Geography</h2>
+    </div>
+    <p id="row-count"></p>
+    <div id="table-container">
+        {{table|safe}}
+    </div>
+</body>
+</html>

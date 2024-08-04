@@ -6,9 +6,10 @@ import pandas as pd
 import numpy as np
 from utils import randomize_location, getSFDF
 import os
+import random
+import requests
 
 class Person():
-
     def __init__(self, blockFIPS, race, location=None):
         self._blockFIPS = blockFIPS
         self._race = race
@@ -80,6 +81,7 @@ class Unit(UnitInterface):
         self._decennial_data = None
         self._decennial_data_cumulative = None
         self._shapeInfo = None
+        self._otherData = None
 
     @property
     def administrativeUnit(self):
@@ -175,6 +177,7 @@ class Unit(UnitInterface):
     def __repr__(self):
         return f"<Unit administrative_unit:{self._administrative_unit}, \n    FIPS:{self._FIPS}, \n    decennial_data: \n {self.decennialData}>"
 
+    
     def getSample(self, n=1, to_csv=False):
         filename = self._FIPS + "_num-sample-" + str(n) + ".csv"
         pathfile = os.path.join("./data/generatedDatasets", filename)
@@ -189,6 +192,31 @@ class Unit(UnitInterface):
             return []
         geometry = self.shapeInfo["geometry"]
         randomLocations = randomize_location(n, geometry)
+
+        # income
+        # extract median household income data and remove the header row
+        header = data[0]
+        data = data[1:]
+        median_incomes = [float(row[header.index('B19013_001E')]) for row in data]
+        # set base URL and parameters
+        base_url = 'https://api.census.gov/data/2019/acs/acs5'
+        params = {
+            'get': 'NAME,B19013_001E',
+            'for': f'block group:{self._FIPS[11:12]}',
+            'in': [f'state:{self._FIPS[:2]}', f'county:{self._FIPS[2:5]}', f'tract:{self._FIPS[5:11]}'],
+        }
+
+        # make the request and get the response data
+        response = requests.get(base_url, params=params)
+        data = response.json()
+        print("data: ", data)
+        # # find values with same median income as n
+        
+        # # select a random value with the same median income as n
+        random_value = random.choice(n)
+
+        # print(random_value)
+
         df = pd.DataFrame({
             "FIPS": [self._FIPS] * n,
             "race":
